@@ -1,0 +1,48 @@
+%==================================================
+%==  Draft script for flip-reg-subtract method  ===
+%==        to exploit bilateral symmetry        ===
+%==      as detailed in Raina et al., 2019      ===
+%==        available at arXiv:1907.08196        ===
+%==================================================
+
+clear
+
+%% Define image path(s)
+P = spm_select(Inf,'image',{'select images for processing'});
+
+for i=1:size(P,1)
+    if i==1
+        pth_img = P;
+    else
+        pth_img = P(i);
+    end
+
+    %% Load nifti volume
+    img            = spm_vol(pth_img);
+
+    %% Flip volume - usage of code from Karl Friston / Thomas Kamer
+    % output with 'f' prefix
+    imgflip        = spm_flip(img);
+
+    %% Apply co-registration and save
+    % overwrites file with 'f' prefix
+    x              = spm_coreg(imgflip, img);
+    M              = spm_matrix(x);
+    spm_get_space(imgflip.fname, M*imgflip.mat); % should overwrite flip
+
+    %% Subtract voxel intensities - symmetry map
+    % output with 'sf' prefix
+    % load volume data
+    orig           = spm_read_vols(img, 0);
+    flip           = spm_read_vols(imgflip, 0);
+
+    % subtract mirror voxel intensity from original
+    sub            = orig - flip;
+
+    % save symmetry map as new volume
+    sym            = img;
+    [p,f,e]        = fileparts(img.fname);
+    sym.fname      = fullfile(p,['sf' f e]);
+    sym.descrip    = [sym.descrip ' - symmetry map'];
+    sym            = spm_write_vol(sym, sub);
+end
