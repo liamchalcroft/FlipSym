@@ -20,11 +20,7 @@ for i=1:size(P,1)
     %% Load nifti volume
     img            = spm_vol(pth_img);
 
-    %% OPTIONAL - Register and reslice to MNI template
-    out = regnslice(pth_img);
-    % change filepath to resliced image
-    pth_img = out.fname;
-    
+    %% 
     %% Flip volume - usage of code from Karl Friston / Thomas Kamer
     % output with 'f' prefix
     imgflip        = spm_flip(img);
