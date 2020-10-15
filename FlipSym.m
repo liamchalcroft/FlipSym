@@ -11,20 +11,22 @@ clear
 P = spm_select(Inf,'image',{'select images for processing'});
 
 for i=1:size(P,1)
-    if i==1
+    if size(P,1)==1
         pth_img = P;
     else
-        pth_img = P(i);
+        pth_img = P(i,:);
     end
-
-    %% Load nifti volume
-    img            = spm_vol(pth_img);
-
+    pth_img = split(pth_img,',');
+    pth_img = char(pth_img(1));
+    
     %% OPTIONAL - Register and reslice to MNI template
     out = regnslice(pth_img);
     % change filepath to resliced image
     pth_img = out.fname;
     
+    %% Load nifti volume
+    img            = spm_vol(pth_img);
+
     %% Flip volume - usage of code from Karl Friston / Thomas Kamer
     % output with 'f' prefix
     imgflip        = spm_flip(img);
