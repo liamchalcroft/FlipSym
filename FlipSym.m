@@ -11,10 +11,10 @@ clear
 P = spm_select(Inf,'image',{'select images for processing'});
 
 for i=1:size(P,1)
-    if i==1
+    if size(P,1)==1
         pth_img = P;
     else
-        pth_img = P(i);
+        pth_img = P(i,:);
     end
     pth_img = split(pth_img,',');
     pth_img = char(pth_img(1));
